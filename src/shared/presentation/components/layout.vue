@@ -1,36 +1,57 @@
 <script setup>
+    import {ref} from 'vue';
+    import {useRoute} from 'vue-router';
+    import {watch} from 'vue';
+    import {useI18n} from 'vue-i18n';
+    import skycropLogo from '../../../assets/skycrop-logo.png';
+    import LanguageSwitcher from './language-switcher.vue';
+    const {t} = useI18n();
+    const route = useRoute();
+    const menuOpen = ref(false);
+    const menuCollapsed = ref(false);
+    function toggleMenu() {
+        if (window.matchMedia('(max-width: 700px)').matches) menuOpen.value = !menuOpen.value;
+        else menuCollapsed.value = !menuCollapsed.value;
+    }
+    watch(() => route.fullPath, () => { menuOpen.value = false; });
     const items = [
-        {label: 'Home', to: '/home'},
-        {label: 'Profile', to: '/profiles'},
-        {label: 'My Plots', to: '/plots'},
-        {label: 'My Drones', to: '/drones'},
-        {label: 'Diagnoses', to: '/diagnoses'},
-        {label: 'Reports', to: '/reports'},
-        {label: 'Settings', to: '/settings'}
+        {label: 'navigation.home', to: '/home'},
+        {label: 'navigation.profile', to: '/profiles'},
+        {label: 'navigation.plots', to: '/plots'},
+        {label: 'navigation.drones', to: '/drones'},
+        {label: 'navigation.diagnoses', to: '/diagnoses'},
+        {label: 'navigation.reports', to: '/reports'},
+        {label: 'navigation.settings', to: '/settings'}
     ];
 </script>
 
 <template>
-    <div class="layout-container">
+    <div class="layout-container" :class="{'menu-collapsed': menuCollapsed}">
         <header class="header">
-            <pv-toolbar class="bg-emerald">
+            <pv-toolbar class="app-toolbar">
                 <template #start>
-                    <h3 class="title-skycrop">Skycrop</h3>
+                    <button class="menu-toggle" type="button" :aria-label="t('navigation.toggleMenu')" :aria-expanded="menuOpen || !menuCollapsed" aria-controls="main-navigation" @click="toggleMenu">
+                        <i class="pi pi-bars" aria-hidden="true"></i>
+                    </button>
+                    <router-link class="title-skycrop" to="/plots"><img :src="skycropLogo" alt="" class="brand-logo" />SkyCrop</router-link>
+                </template>
+                <template #end>
+                    <language-switcher />
                 </template>
             </pv-toolbar>
         </header>
         <div class="layout-body">
-            <aside class="side-bar bg-emerald">
-                <div class="flex-normal">
-                    <pv-button v-for="item in items" :key="item.label" as-child v-slot="slotProps">
-                        <router-link :to="item.to" :class="slotProps['class']">
-                            {{ item.label }}
-                        </router-link>
-                    </pv-button>
-                </div>
+            <aside id="main-navigation" class="side-bar" :class="{'menu-open': menuOpen}">
+                <h2 class="navigation-heading">{{ t('navigation.menuTitle') }}</h2>
+                <nav :aria-label="t('navigation.menu')" class="navigation-list">
+                    <router-link v-for="item in items" :key="item.label" :to="item.to" class="navigation-item">
+                        {{ t(item.label) }}
+                    </router-link>
+                </nav>
             </aside>
             <main class="layout-content">
-                <router-view/>
+                <div class="page-content"><router-view/></div>
+                <footer class="app-footer">© {{ new Date().getFullYear() }} GreenTech · SkyCrop</footer>
             </main>
         </div>
     </div>    

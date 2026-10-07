@@ -1,11 +1,21 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {createRouter, createWebHistory} from 'vue-router';
 
+const pendingSection = () => import('./shared/presentation/views/pending-section.vue');
 
-const routes = [];
+const routes = [
+  {path: '/', redirect: '/plots'},
+  {path: '/home', name: 'home', component: pendingSection, props: {titleKey: 'navigation.home'}},
+  {path: '/profiles', name: 'profile', component: pendingSection, props: {titleKey: 'navigation.profile'}},
+  {path: '/drones', name: 'drones', component: pendingSection, props: {titleKey: 'navigation.drones'}},
+  {path: '/diagnoses', name: 'diagnoses', component: pendingSection, props: {titleKey: 'navigation.diagnoses'}},
+  {path: '/reports', name: 'reports', component: pendingSection, props: {titleKey: 'navigation.reports'}},
+  {path: '/settings', name: 'settings', component: pendingSection, props: {titleKey: 'navigation.settings'}},
+  {path: '/plots', name: 'plots', component: () => import('./plots/presentation/views/plot-list.vue')},
+  {path: '/plots/new', name: 'plot-registration', component: () => import('./plots/presentation/views/plot-registration.vue')},
+  {path: '/plots/:id', name: 'plot-details', component: () => import('./plots/presentation/views/plot-details.vue')}
+];
 
-const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
-    routes: routes
-})
-
-export default router;
+export default createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes
+});
