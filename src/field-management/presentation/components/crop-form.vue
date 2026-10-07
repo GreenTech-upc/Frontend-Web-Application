@@ -17,6 +17,12 @@ const cropVarieties = ref([
 const selectedCrop = ref(null)
 const selectedVariety = ref(null)
 const sowingDate = ref(null)
+
+const showSuccessMessage = ref(false)
+
+const registerCrop = () => {
+  showSuccessMessage.value = true
+}
 </script>
 
 <template>
@@ -24,6 +30,13 @@ const sowingDate = ref(null)
     <h1>Registro de cultivo</h1>
 
     <div class="crop-form__divider"></div>
+
+    <p
+        v-if="showSuccessMessage"
+        class="crop-form__success"
+    >
+      Cultivo enlazado exitosamente.
+    </p>
 
     <pv-card class="crop-form__card">
       <template #title>
@@ -79,6 +92,7 @@ const sowingDate = ref(null)
 
       <pv-button
           label="Registrar"
+          @click="registerCrop"
       />
     </div>
   </section>
@@ -99,6 +113,14 @@ const sowingDate = ref(null)
   height: 2px;
   margin: 24px 0 32px;
   background: #1976a8;
+}
+
+.crop-form__success {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #66bb6a;
+  color: #ffffff;
 }
 
 .crop-form__card {
