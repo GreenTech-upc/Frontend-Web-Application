@@ -12,7 +12,7 @@ import { Button, Column, ConfirmDialog, DataTable, FloatLabel, InputText, Select
 createApp(App)
     .use(i18n)
     .use(createPinia())
-    .use(PrimeVue, {theme: {preset: Material}})
+    .use(PrimeVue, {theme: {preset: Material}, license: import.meta.env.VITE_PRIME_UI_LICENSE_KEY})
     .use(router)
     .component('pv-button',         Button)
     .component('pv-column',         Column)
