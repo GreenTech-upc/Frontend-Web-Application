@@ -43,7 +43,10 @@
     "drones": "Mis drones",
     "diagnoses": "Diagnósticos",
     "reports": "Reportes",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "toggleMenu": "Mostrar u ocultar menú",
+    "menu": "Navegación principal",
+    "pending": "Aún no disponible"
   },
   "language": "Idioma"
 }

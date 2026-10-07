@@ -50,26 +50,33 @@
 }
 
 .layout-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100vh;
-    position: relative;
-    background-color: #f8f9fa;
-    box-sizing: border-box;
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f7f5;
 }
-
-.header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 64px;
-    z-index: 1000;
+.header { flex-shrink: 0; }
+.header .app-toolbar {
+  min-height: 64px;
+  border: 0;
+  border-radius: 0;
+  padding: 12px 24px;
+  background: #2e7d32;
+  color: white;
 }
+.title-skycrop { margin: 0; font-size: 20px; text-decoration: none; }
+.layout-body { display: flex; flex: 1; min-height: calc(100vh - 64px); }
+.side-bar { width: 220px; flex-shrink: 0; padding: 24px 16px; background: #e4eee5; box-sizing: border-box; }
+.navigation-list { display: flex; flex-direction: column; gap: 8px; }
+.navigation-item { display: block; padding: 12px 16px; border-radius: 6px; color: #17221c; text-decoration: none; }
+.navigation-item.router-link-active { background: #2e7d32; color: white; }
+.navigation-item:hover { background: #d0e2d2; }
+.navigation-item.router-link-active:hover { background: #256629; }
+.navigation-pending { color: #526057; cursor: default; }
+.layout-content { flex: 1; padding: 32px; box-sizing: border-box; }
+.menu-toggle { display: none; }
 
-.layout-body {
+body {
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -120,7 +127,12 @@ body { margin: 0; }
 .router-link-active { font-weight: 600; }
 a:focus-visible { outline: 3px solid #1976a8; outline-offset: 4px; }
 @media (max-width: 700px) {
-  .side-bar { width: 120px; min-width: 120px; padding: 8px; }
+  .layout-body { flex-direction: column; }
+  .side-bar { display: none; width: 100%; padding: 12px 16px; }
+  .side-bar.menu-open { display: block; }
+  .header .app-toolbar { padding: 12px 16px; }
+  .menu-toggle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-right: 8px; color: white; background: transparent; border: 1px solid #ffffff80; border-radius: 6px; cursor: pointer; }
+  .menu-toggle:focus-visible { outline: 3px solid white; outline-offset: 2px; }
   .layout-content { padding: 16px; }
   .plot-grid { grid-template-columns: 1fr; }
   .page-heading { align-items: flex-start; flex-direction: column; margin-bottom: 16px; }
