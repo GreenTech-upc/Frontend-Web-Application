@@ -1,12 +1,18 @@
 <script setup>
+import { useI18n } from 'vue-i18n';
+import LanguageSwitcher from './language-switcher.vue';
+
+
+    const { t } = useI18n();
+
     const items = [
-        {label: 'Home', to: '/home'},
-        {label: 'Profile', to: '/profiles'},
-        {label: 'My Plots', to: '/plots'},
-        {label: 'My Drones', to: '/drones'},
-        {label: 'Diagnoses', to: '/diagnoses'},
-        {label: 'Reports', to: '/reports'},
-        {label: 'Settings', to: '/settings'}
+        {label: 'option.home', to: '/home'},
+        {label: 'option.profile', to: '/profiles'},
+        {label: 'option.plots', to: '/plots'},
+        {label: 'option.drones', to: '/drones'},
+        {label: 'option.diagnose', to: '/diagnoses'},
+        {label: 'option.reports', to: '/reports'},
+        {label: 'option.settings', to: '/settings'}
     ];
 </script>
 
@@ -17,6 +23,9 @@
                 <template #start>
                     <h3 class="title-skycrop">Skycrop</h3>
                 </template>
+                <template #end>
+                    <language-switcher/>
+                </template>
             </pv-toolbar>
         </header>
         <div class="layout-body">
@@ -24,7 +33,7 @@
                 <div class="flex-normal">
                     <pv-button v-for="item in items" :key="item.label" as-child v-slot="slotProps">
                         <router-link :to="item.to" :class="slotProps['class']">
-                            {{ item.label }}
+                            {{t( item.label )}}
                         </router-link>
                     </pv-button>
                 </div>
