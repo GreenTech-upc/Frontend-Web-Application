@@ -19,8 +19,17 @@ const selectedVariety = ref(null)
 const sowingDate = ref(null)
 
 const showSuccessMessage = ref(false)
+const showValidationMessage = ref(false)
 
 const registerCrop = () => {
+  showSuccessMessage.value = false
+  showValidationMessage.value = false
+
+  if (!selectedCrop.value || !selectedVariety.value || !sowingDate.value) {
+    showValidationMessage.value = true
+    return
+  }
+
   showSuccessMessage.value = true
 }
 </script>
@@ -36,6 +45,13 @@ const registerCrop = () => {
         class="crop-form__success"
     >
       Cultivo enlazado exitosamente.
+    </p>
+
+    <p
+        v-if="showValidationMessage"
+        class="crop-form__validation"
+    >
+      Completa todos los campos.
     </p>
 
     <pv-card class="crop-form__card">
@@ -120,6 +136,14 @@ const registerCrop = () => {
   padding: 12px 16px;
   border-radius: 8px;
   background: #66bb6a;
+  color: #ffffff;
+}
+
+.crop-form__validation {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f5a623;
   color: #ffffff;
 }
 
