@@ -34,7 +34,9 @@
     "notAvailable": "No disponible",
     "loadError": "No se pudieron cargar las parcelas. Inténtalo de nuevo.",
     "detailError": "No se pudieron cargar los detalles. Inténtalo de nuevo.",
-    "registerError": "No se pudo registrar la parcela. Revisa los datos e inténtalo de nuevo."
+    "registerError": "No se pudo registrar la parcela. Revisa los datos e inténtalo de nuevo.",
+    "allStatuses": "Todos los estados",
+    "filterStatus": "Filtrar por estado"
   },
   "navigation": {
     "home": "Inicio",
@@ -46,7 +48,8 @@
     "settings": "Configuración",
     "toggleMenu": "Mostrar u ocultar menú",
     "menu": "Navegación principal",
-    "pending": "Aún no disponible"
+    "pending": "Aún no disponible",
+    "menuTitle": "Menú"
   },
   "language": "Idioma"
 }

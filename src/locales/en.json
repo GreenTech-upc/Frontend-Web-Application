@@ -34,7 +34,9 @@
     "notAvailable": "Not available",
     "loadError": "Unable to load plots. Please try again.",
     "detailError": "Unable to load plot details. Please try again.",
-    "registerError": "Unable to register the plot. Check the information and try again."
+    "registerError": "Unable to register the plot. Check the information and try again.",
+    "allStatuses": "All statuses",
+    "filterStatus": "Filter by status"
   },
   "navigation": {
     "home": "Home",
@@ -46,7 +48,8 @@
     "settings": "Settings",
     "toggleMenu": "Toggle navigation",
     "menu": "Main navigation",
-    "pending": "Not available yet"
+    "pending": "Not available yet",
+    "menuTitle": "Menu"
   },
   "language": "Language"
 }

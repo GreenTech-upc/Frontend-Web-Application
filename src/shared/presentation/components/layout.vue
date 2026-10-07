@@ -3,6 +3,7 @@
     import {useRoute} from 'vue-router';
     import {watch} from 'vue';
     import {useI18n} from 'vue-i18n';
+    import skycropLogo from '../../../assets/skycrop-logo.png';
     import LanguageSwitcher from './language-switcher.vue';
     const {t} = useI18n();
     const route = useRoute();
@@ -27,7 +28,7 @@
                     <button class="menu-toggle" type="button" :aria-label="t('navigation.toggleMenu')" :aria-expanded="menuOpen" aria-controls="main-navigation" @click="menuOpen = !menuOpen">
                         <i class="pi pi-bars" aria-hidden="true"></i>
                     </button>
-                    <router-link class="title-skycrop" to="/plots">SkyCrop</router-link>
+                    <router-link class="title-skycrop" to="/plots"><img :src="skycropLogo" alt="" class="brand-logo" />SkyCrop</router-link>
                 </template>
                 <template #end>
                     <language-switcher />
@@ -36,6 +37,7 @@
         </header>
         <div class="layout-body">
             <aside id="main-navigation" class="side-bar" :class="{'menu-open': menuOpen}">
+                <h2 class="navigation-heading">{{ t('navigation.menuTitle') }}</h2>
                 <nav :aria-label="t('navigation.menu')" class="navigation-list">
                     <template v-for="item in items" :key="item.label">
                         <router-link v-if="item.to === '/plots'" :to="item.to" class="navigation-item">
@@ -48,7 +50,8 @@
                 </nav>
             </aside>
             <main class="layout-content">
-                <router-view/>
+                <div class="page-content"><router-view/></div>
+                <footer class="app-footer">© {{ new Date().getFullYear() }} GreenTech · SkyCrop</footer>
             </main>
         </div>
     </div>    
