@@ -1,9 +1,11 @@
 <script setup>
+import {useI18n} from 'vue-i18n';
 import {computed, onMounted, reactive} from 'vue';
 import {useRouter} from 'vue-router';
 import {storeToRefs} from 'pinia';
 import {usePlotsStore} from '../../application/plots.store.js';
 
+const {t} = useI18n();
 const router = useRouter();
 const store = usePlotsStore();
 const {saving, error} = storeToRefs(store);
@@ -22,34 +24,34 @@ async function registerPlot() {
 
 <template>
   <section class="plots-page">
-    <router-link to="/plots">My plots</router-link>
-    <h1>Agricultural Plot Registration</h1>
+    <router-link to="/plots">{{ t('plots.back') }}</router-link>
+    <h1>{{ t('plots.registrationTitle') }}</h1>
     <form @submit.prevent="registerPlot">
       <div class="plot-grid">
         <fieldset class="plot-card" :disabled="saving">
-          <legend>Basic information</legend>
+          <legend>{{ t('plots.basicInformation') }}</legend>
           <div class="form-field">
-            <label for="plot-name">Plot name</label>
+            <label for="plot-name">{{ t('plots.name') }}</label>
             <pv-input-text id="plot-name" v-model="form.name" required maxlength="100" />
           </div>
           <div class="form-field">
-            <label for="plot-area">Surface (hectares)</label>
+            <label for="plot-area">{{ t('plots.area') }}</label>
             <pv-input-text id="plot-area" v-model="form.areaHectares" type="number" min="0" step="any" required aria-describedby="area-help" />
-            <small id="area-help">Enter an area greater than zero.</small>
+            <small id="area-help">{{ t('plots.areaHelp') }}</small>
           </div>
         </fieldset>
         <fieldset class="plot-card" :disabled="saving">
-          <legend>Location</legend>
+          <legend>{{ t('plots.location') }}</legend>
           <div class="form-field">
-            <label for="plot-location">Address or location description</label>
+            <label for="plot-location">{{ t('plots.locationDescription') }}</label>
             <pv-textarea id="plot-location" v-model="form.location" required maxlength="300" rows="4" />
           </div>
         </fieldset>
       </div>
-      <p v-if="error" class="error-message" role="alert">{{ error }}</p>
+      <p v-if="error" class="error-message" role="alert">{{ t(error) }}</p>
       <div class="form-actions">
-        <router-link v-if="!saving" to="/plots">Cancel</router-link>
-        <pv-button type="submit" :label="saving ? 'Registering…' : 'Register plot'" :disabled="!valid || saving" />
+        <router-link v-if="!saving" to="/plots">{{ t('plots.cancel') }}</router-link>
+        <pv-button type="submit" :label="t(saving ? 'plots.registering' : 'plots.register')" :disabled="!valid || saving" />
       </div>
     </form>
   </section>

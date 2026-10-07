@@ -19,7 +19,7 @@ export const usePlotsStore = defineStore('plots', () => {
     try {
       plots.value = AgriculturalPlotAssembler.toEntitiesFromResponse(await api.getAll());
     } catch {
-      error.value = 'Unable to load plots. Please try again.';
+      error.value = 'plots.loadError';
     } finally {
       loading.value = false;
     }
@@ -35,7 +35,7 @@ export const usePlotsStore = defineStore('plots', () => {
       selectedPlot.value = AgriculturalPlotAssembler.toEntityFromResource(response.data);
     } catch (failure) {
       notFound.value = failure.response?.status === 404;
-      if (!notFound.value) error.value = 'Unable to load plot details. Please try again.';
+      if (!notFound.value) error.value = 'plots.detailError';
     } finally {
       loading.value = false;
     }
@@ -52,7 +52,7 @@ export const usePlotsStore = defineStore('plots', () => {
       plots.value = [...plots.value, savedPlot];
       return savedPlot;
     } catch {
-      error.value = 'Unable to register the plot. Check the information and try again.';
+      error.value = 'plots.registerError';
       return null;
     } finally {
       saving.value = false;

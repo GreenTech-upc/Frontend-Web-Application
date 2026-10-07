@@ -6,6 +6,10 @@ Install dependencies with `npm install`. Start the development API with `npm run
 
 The development API runs at `http://localhost:3000/api/v1`, configured in `.env.development`. It stores registered plots in `server/db.json`. Keep personal test records out of commits.
 
+## Languages
+
+English is the default language. Use the EN/ES selector in the header to switch languages. The selection is saved in the browser.
+
 ## Plots
 
 - `/plots`: registered plots and search by name or location.

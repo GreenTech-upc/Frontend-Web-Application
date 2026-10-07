@@ -1,8 +1,10 @@
 <script setup>
+import {useI18n} from 'vue-i18n';
 import {computed, onMounted, ref} from 'vue';
 import {storeToRefs} from 'pinia';
 import {usePlotsStore} from '../../application/plots.store.js';
 
+const {t, n} = useI18n();
 const store = usePlotsStore();
 const {plots, loading, error} = storeToRefs(store);
 const search = ref('');
@@ -16,27 +18,27 @@ onMounted(() => store.fetchPlots());
 <template>
   <section class="plots-page" :aria-busy="loading">
     <div class="page-heading">
-      <h1>Registered Agricultural Plots</h1>
-      <router-link class="action-link" to="/plots/new">Add plot</router-link>
+      <h1>{{ t('plots.listTitle') }}</h1>
+      <router-link class="action-link" to="/plots/new">{{ t('plots.add') }}</router-link>
     </div>
-    <label for="plot-search">Search by name or location</label>
+    <label for="plot-search">{{ t('plots.search') }}</label>
     <pv-input-text id="plot-search" v-model="search" class="w-full" type="search" />
-    <p v-if="loading" role="status">Loading plots…</p>
+    <p v-if="loading" role="status">{{ t('plots.loading') }}</p>
     <div v-else-if="error" role="alert" class="error-message">
-      <p>{{ error }}</p>
-      <pv-button label="Try again" @click="store.fetchPlots()" />
+      <p>{{ t(error) }}</p>
+      <pv-button :label="t('plots.retry')" @click="store.fetchPlots()" />
     </div>
     <template v-else>
-      <p>Total: {{ filteredPlots.length }}</p>
-      <p v-if="!plots.length" class="empty-state">No plots registered yet. Add your first plot to get started.</p>
-      <p v-else-if="!filteredPlots.length" class="empty-state">No plots match your search.</p>
+      <p>{{ t('plots.total', {count: filteredPlots.length}) }}</p>
+      <p v-if="!plots.length" class="empty-state">{{ t('plots.empty') }}</p>
+      <p v-else-if="!filteredPlots.length" class="empty-state">{{ t('plots.noMatches') }}</p>
       <div v-else class="plot-grid">
         <article v-for="plot in filteredPlots" :key="plot.id" class="plot-card">
           <h2>{{ plot.name }}</h2>
-          <p>Location: {{ plot.location }}</p>
-          <p>Surface: {{ plot.areaHectares }} ha</p>
-          <p>Status: {{ plot.status === 'ACTIVE' ? 'Active' : 'Inactive' }}</p>
-          <router-link :to="`/plots/${plot.id}`" :aria-label="`View details for ${plot.name}`">Details</router-link>
+          <p>{{ t('plots.location') }}: {{ plot.location }}</p>
+          <p>{{ t('plots.surface') }}: {{ n(plot.areaHectares) }} ha</p>
+          <p>{{ t('plots.status') }}: {{ t(plot.status === 'ACTIVE' ? 'plots.active' : 'plots.inactive') }}</p>
+          <router-link :to="`/plots/${plot.id}`" :aria-label="t('plots.detailsLink', {name: plot.name})">{{ t('plots.details') }}</router-link>
         </article>
       </div>
     </template>
