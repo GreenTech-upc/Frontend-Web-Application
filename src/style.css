@@ -100,3 +100,31 @@
     background-color: inherit !important;
     border: none !important;
 }
+
+body { margin: 0; }
+.layout-content { min-width: 0; }
+.plots-page { max-width: 1100px; margin: 0 auto; }
+.page-heading, .form-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.plot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin: 24px 0; }
+.plot-card { background: #fff; border: 1px solid #607d8b; border-radius: 8px; padding: 24px; min-width: 0; overflow-wrap: anywhere; }
+.plot-card h2 { margin-top: 0; }
+.form-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.form-actions { justify-content: flex-end; }
+.action-link { background: #2e7d32; color: #fff; padding: 12px 20px; border-radius: 6px; text-decoration: none; white-space: nowrap; }
+.error-message { color: #b3261e; }
+.success-message { color: #2e7d32; }
+.empty-state { padding: 24px 0; }
+.plot-details { display: grid; grid-template-columns: auto 1fr; gap: 16px; }
+.plot-details dt { font-weight: 600; }
+.plot-details dd { margin: 0; }
+.router-link-active { font-weight: 600; }
+a:focus-visible { outline: 3px solid #1976a8; outline-offset: 4px; }
+@media (max-width: 700px) {
+  .side-bar { width: 120px; min-width: 120px; padding: 8px; }
+  .layout-content { padding: 16px; }
+  .plot-grid { grid-template-columns: 1fr; }
+  .page-heading { align-items: flex-start; flex-direction: column; margin-bottom: 16px; }
+  .plot-card { padding: 16px; }
+  .plot-details { grid-template-columns: 1fr; gap: 8px; }
+  .plot-details dd { margin-bottom: 8px; }
+}

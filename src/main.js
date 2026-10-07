@@ -2,9 +2,15 @@ import { createApp } from 'vue'
 import './style.css'
 import App from './app.vue'
 import router from './router.js'
+import {createPinia} from 'pinia'
+import PrimeVue from 'primevue/config'
+import Material from '@primeuix/themes/material'
+import 'primeicons/primeicons.css'
 import { Button, Column, ConfirmDialog, DataTable, FloatLabel, InputText, Select, SelectButton, Textarea, Toolbar } from 'primevue'
 
 createApp(App)
+    .use(createPinia())
+    .use(PrimeVue, {theme: {preset: Material}})
     .use(router)
     .component('pv-button',         Button)
     .component('pv-column',         Column)

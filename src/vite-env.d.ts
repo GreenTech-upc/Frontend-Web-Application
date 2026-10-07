@@ -1,7 +1,8 @@
-interface importMetaEnv {
-
+/// <reference types="vite/client" />
+interface ImportMetaEnv {
+    readonly VITE_SKYCROP_API_URL: string;
 }
 
 interface ImportMeta {
-    readonly env: importMetaEnv;
+    readonly env: ImportMetaEnv;
 }

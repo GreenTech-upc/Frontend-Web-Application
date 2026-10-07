@@ -1,11 +1,13 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {createRouter, createWebHistory} from 'vue-router';
 
+const routes = [
+  {path: '/', redirect: '/plots'},
+  {path: '/plots', name: 'plots', component: () => import('./plots/presentation/views/plot-list.vue')},
+  {path: '/plots/new', name: 'plot-registration', component: () => import('./plots/presentation/views/plot-registration.vue')},
+  {path: '/plots/:id', name: 'plot-details', component: () => import('./plots/presentation/views/plot-details.vue')}
+];
 
-const routes = [];
-
-const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
-    routes: routes
-})
-
-export default router;
+export default createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes
+});
