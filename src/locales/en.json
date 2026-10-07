@@ -1,0 +1,11 @@
+{
+    "option": {
+        "home": "Home",
+        "profile": "Profile",
+        "plots": "My Plots",
+        "drones": "My Drones",
+        "diagnose": "Diagnoses",
+        "reports": "Reports",
+        "settings": "Settings"
+    }
+}

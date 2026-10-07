@@ -1,0 +1,11 @@
+{
+    "option": {
+        "home": "Inicio",
+        "profile": "Perfil",
+        "plots": "Mis Terrenos",
+        "drones": "Mis Drones",
+        "diagnose": "Diagnosticos",
+        "reports": "Reportes",
+        "settings": "Ajustes"
+    }
+}

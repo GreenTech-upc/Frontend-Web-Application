@@ -3,8 +3,10 @@ import './style.css'
 import App from './app.vue'
 import router from './router.js'
 import { Button, Column, ConfirmDialog, DataTable, FloatLabel, InputText, Select, SelectButton, Textarea, Toolbar } from 'primevue'
+import i18n from './i18n.js'
 
 createApp(App)
+    .use(i18n)
     .use(router)
     .component('pv-button',         Button)
     .component('pv-column',         Column)
