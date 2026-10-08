@@ -1,3 +1,4 @@
+
 {
   "plots": {
     "listTitle": "Parcelas agrícolas registradas",
@@ -54,7 +55,29 @@
   },
   "crops": {
     "title": "Cultivos",
-    "viewPlotCrops": "Ver cultivos de {name}"
+    "viewPlotCrops": "Ver cultivos de {name}",
+    "listTitle": "Cultivos registrados",
+    "description": "Cultivos asociados a esta parcela.",
+    "register": "Registrar cultivo",
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar cultivos",
+    "filterStatus": "Filtrar por",
+    "allStatuses": "Todos los estados",
+    "active": "Activo",
+    "inProgress": "En progreso",
+    "completed": "Completado",
+    "total": "Total: {count}",
+    "empty": "Aún no hay cultivos registrados.",
+    "noMatches": "No se encontraron cultivos que coincidan.",
+    "loading": "Cargando cultivos...",
+    "loadingPlot": "Cargando parcela...",
+    "loadError": "No se pudieron cargar los cultivos.",
+    "plotNotFound": "Parcela no encontrada.",
+    "variety": "Variedad",
+    "plantingDate": "Fecha de siembra",
+    "expectedHarvest": "Cosecha prevista",
+    "status": "Estado",
+    "details": "Detalles"
   },
   "language": "Idioma"
 }
