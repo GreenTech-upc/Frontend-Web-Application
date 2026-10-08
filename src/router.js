@@ -14,6 +14,7 @@ const routes = [
   {path: '/plots', name: 'plots', component: () => import('./plots/presentation/views/plot-list.vue')},
   {path: '/plots/new', name: 'plot-registration', component: () => import('./plots/presentation/views/plot-registration.vue')},
   {path: '/plots/:id', name: 'plot-details', component: () => import('./plots/presentation/views/plot-details.vue')},
+  {path: '/plots/:id/crops/new', name: 'crop-registration', component: () => import('./field-management/presentation/components/crop-form.vue')},
   {path: '/plots/:id/crops', name: 'crop-list', component: () => import('./field-management/presentation/views/crop-list.vue')}
 ];
 

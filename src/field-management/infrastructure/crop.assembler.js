@@ -13,9 +13,19 @@ export class CropAssembler {
             variety: entity.variety,
             plantingDate: entity.plantingDate,
             expectedHarvest: entity.expectedHarvest,
-            status: entity.status
+            status: entity.status,
+            plantedAreaHectares: entity.plantedAreaHectares,
+            sowingMethod: entity.sowingMethod,
+            irrigationType: entity.irrigationType,
+            soilType: entity.soilType,
+            notes: entity.notes,
+            imageUrl: entity.imageUrl
         };
-        if (entity.id !== null) resource.id = entity.id;
+
+        if (entity.id !== null) {
+            resource.id = entity.id;
+        }
+
         return resource;
     }
 
