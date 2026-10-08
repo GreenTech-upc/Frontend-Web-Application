@@ -10,7 +10,7 @@ const route = useRoute();
 const router = useRouter();
 
 const plotsStore = usePlotsStore();
-const {plots} = storeToRefs(plotsStore);
+const {plots, loading: plotsLoading, error: plotsError} = storeToRefs(plotsStore);
 
 const cropsStore = useCropsStore();
 const {saving, error} = storeToRefs(cropsStore);
@@ -19,7 +19,13 @@ const name = ref('');
 const variety = ref('');
 const plantingDate = ref(null);
 const expectedHarvest = ref(null);
-const showValidation = ref(false);
+const plantedAreaHectares = ref(null);
+const sowingMethod = ref('');
+const irrigationType = ref('');
+const soilType = ref('');
+const notes = ref('');
+const imageUrl = ref('');
+const validationMessage = ref('');
 
 const plot = computed(() =>
     plots.value.find(plot => String(plot.id) === String(route.params.id))
@@ -40,10 +46,30 @@ const cancel = () => {
 };
 
 const registerCrop = async () => {
-  showValidation.value = false;
+  validationMessage.value = '';
 
   if (!plot.value || !name.value.trim() || !variety.value.trim() || !plantingDate.value) {
-    showValidation.value = true;
+    validationMessage.value = 'Complete all required fields.';
+    return;
+  }
+
+  const area = plantedAreaHectares.value === null ||
+  plantedAreaHectares.value === ''
+      ? null
+      : Number(plantedAreaHectares.value);
+
+  if (area !== null && (!Number.isFinite(area) || area <= 0)) {
+    validationMessage.value = 'The planted area must be greater than zero.';
+    return;
+  }
+
+  if (area !== null && area > plot.value.areaHectares) {
+    validationMessage.value = 'The planted area cannot exceed the plot area.';
+    return;
+  }
+
+  if (expectedHarvest.value && expectedHarvest.value < plantingDate.value) {
+    validationMessage.value = 'Expected harvest cannot be before the planting date.';
     return;
   }
 
@@ -52,7 +78,13 @@ const registerCrop = async () => {
     name: name.value,
     variety: variety.value,
     plantingDate: formatDate(plantingDate.value),
-    expectedHarvest: formatDate(expectedHarvest.value)
+    expectedHarvest: formatDate(expectedHarvest.value),
+    plantedAreaHectares: area,
+    sowingMethod: sowingMethod.value,
+    irrigationType: irrigationType.value,
+    soilType: soilType.value,
+    notes: notes.value,
+    imageUrl: imageUrl.value
   });
 
   if (savedCrop) {
@@ -65,33 +97,51 @@ onMounted(() => plotsStore.fetchPlots());
 
 <template>
   <section class="plots-page crop-registration">
-    <p>
-      <router-link to="/plots">My plots</router-link>
-      / <router-link :to="`/plots/${route.params.id}/crops`">Crops</router-link>
+    <p class="mb-3">
+      <router-link to="/plots">My Plots</router-link>
+      /
+      <router-link :to="`/plots/${route.params.id}/crops`">
+        Crops
+      </router-link>
       / Register Crop
     </p>
 
-    <h1>Register Crop</h1>
+    <div class="page-heading">
+      <h1>Register Crop</h1>
+      <p>Enter the information for the new crop.</p>
+    </div>
 
-    <p v-if="!plot">Loading plot information...</p>
+    <p v-if="plotsLoading">Loading plot information...</p>
+    <p v-else-if="plotsError" class="error-message">
+      Unable to load plot information.
+    </p>
+    <p v-else-if="!plot" class="empty-state">
+      Plot not found.
+    </p>
 
     <template v-else>
-      <p v-if="showValidation" class="error-message">
-        Complete all required fields.
+      <p v-if="validationMessage" class="error-message">
+        {{ validationMessage }}
       </p>
 
-      <p v-if="error" class="error-message">{{ error }}</p>
+      <p v-if="error" class="error-message">
+        {{ error }}
+      </p>
 
-      <div class="crop-registration-fields">
-        <fieldset class="plot-card">
+      <div class="crop-registration-grid">
+        <fieldset class="crop-registration-section">
           <legend>Basic Information</legend>
 
-          <div class="form-field">
+          <div class="crop-registration-field">
             <label for="crop-plot">Plot *</label>
-            <pv-input-text id="crop-plot" :model-value="plot.name" disabled />
+            <pv-input-text
+                id="crop-plot"
+                :model-value="plot.name"
+                disabled
+            />
           </div>
 
-          <div class="form-field">
+          <div class="crop-registration-field">
             <label for="crop-name">Crop type *</label>
             <pv-input-text
                 id="crop-name"
@@ -100,7 +150,7 @@ onMounted(() => plotsStore.fetchPlots());
             />
           </div>
 
-          <div class="form-field">
+          <div class="crop-registration-field">
             <label for="crop-variety">Variety *</label>
             <pv-input-text
                 id="crop-variety"
@@ -109,8 +159,10 @@ onMounted(() => plotsStore.fetchPlots());
             />
           </div>
 
-          <div class="form-field">
-            <label for="crop-planting-date">Planting date *</label>
+          <div class="crop-registration-field">
+            <label for="crop-planting-date">
+              Planting date *
+            </label>
             <pv-date-picker
                 input-id="crop-planting-date"
                 v-model="plantingDate"
@@ -119,8 +171,10 @@ onMounted(() => plotsStore.fetchPlots());
             />
           </div>
 
-          <div class="form-field">
-            <label for="crop-harvest">Expected harvest</label>
+          <div class="crop-registration-field">
+            <label for="crop-harvest">
+              Expected harvest
+            </label>
             <pv-date-picker
                 input-id="crop-harvest"
                 v-model="expectedHarvest"
@@ -128,13 +182,89 @@ onMounted(() => plotsStore.fetchPlots());
                 show-icon
             />
           </div>
+
+          <div class="crop-registration-field">
+            <label for="crop-area">
+              Planted area (ha)
+            </label>
+            <pv-input-text
+                id="crop-area"
+                v-model="plantedAreaHectares"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Enter planted area"
+            />
+          </div>
+        </fieldset>
+
+        <fieldset class="crop-registration-section">
+          <legend>Additional Information</legend>
+
+          <div class="crop-registration-field">
+            <label for="crop-sowing-method">
+              Sowing method
+            </label>
+            <pv-input-text
+                id="crop-sowing-method"
+                v-model="sowingMethod"
+                placeholder="Enter sowing method"
+            />
+          </div>
+
+          <div class="crop-registration-field">
+            <label for="crop-irrigation">
+              Irrigation type
+            </label>
+            <pv-input-text
+                id="crop-irrigation"
+                v-model="irrigationType"
+                placeholder="Enter irrigation type"
+            />
+          </div>
+
+          <div class="crop-registration-field">
+            <label for="crop-soil">
+              Soil type
+            </label>
+            <pv-input-text
+                id="crop-soil"
+                v-model="soilType"
+                placeholder="Enter soil type"
+            />
+          </div>
+
+          <div class="crop-registration-field">
+            <label for="crop-image">
+              Reference image URL
+            </label>
+            <pv-input-text
+                id="crop-image"
+                v-model="imageUrl"
+                type="url"
+                placeholder="https://example.com/image.jpg"
+            />
+          </div>
+
+          <div class="crop-registration-field">
+            <label for="crop-notes">
+              Notes
+            </label>
+            <pv-textarea
+                id="crop-notes"
+                v-model="notes"
+                rows="5"
+                placeholder="Enter additional notes"
+            />
+          </div>
         </fieldset>
       </div>
 
-      <div class="form-actions">
+      <div class="crop-registration-actions">
         <pv-button
             label="Cancel"
             severity="secondary"
+            :disabled="saving"
             @click="cancel"
         />
 
