@@ -1,3 +1,4 @@
+
 {
   "plots": {
     "listTitle": "Registered Agricultural Plots",
@@ -51,6 +52,32 @@
     "pending": "Not available yet",
     "menuTitle": "Menu",
     "sectionPending": "This section is pending development. You can register and view plots in My Plots."
+  },
+  "crops": {
+    "title": "Crops",
+    "viewPlotCrops": "View crops for {name}",
+    "listTitle": "Registered Crops",
+    "description": "Crops associated with this plot.",
+    "register": "Register Crop",
+    "search": "Search",
+    "searchPlaceholder": "Search crops",
+    "filterStatus": "Filter by",
+    "allStatuses": "All statuses",
+    "active": "Active",
+    "inProgress": "In progress",
+    "completed": "Completed",
+    "total": "Total: {count}",
+    "empty": "No crops registered yet.",
+    "noMatches": "No matching crops found.",
+    "loading": "Loading crops...",
+    "loadingPlot": "Loading plot...",
+    "loadError": "Unable to load crops.",
+    "plotNotFound": "Plot not found.",
+    "variety": "Variety",
+    "plantingDate": "Planting date",
+    "expectedHarvest": "Expected harvest",
+    "status": "Status",
+    "details": "Details"
   },
   "language": "Language"
 }

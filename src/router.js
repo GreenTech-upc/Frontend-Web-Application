@@ -1,3 +1,4 @@
+
 import {createRouter, createWebHistory} from 'vue-router';
 
 const pendingSection = () => import('./shared/presentation/views/pending-section.vue');
@@ -12,7 +13,8 @@ const routes = [
   {path: '/settings', name: 'settings', component: pendingSection, props: {titleKey: 'navigation.settings'}},
   {path: '/plots', name: 'plots', component: () => import('./plots/presentation/views/plot-list.vue')},
   {path: '/plots/new', name: 'plot-registration', component: () => import('./plots/presentation/views/plot-registration.vue')},
-  {path: '/plots/:id', name: 'plot-details', component: () => import('./plots/presentation/views/plot-details.vue')}
+  {path: '/plots/:id', name: 'plot-details', component: () => import('./plots/presentation/views/plot-details.vue')},
+  {path: '/plots/:id/crops', name: 'crop-list', component: () => import('./field-management/presentation/views/crop-list.vue')}
 ];
 
 export default createRouter({
