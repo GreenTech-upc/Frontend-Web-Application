@@ -1,125 +1,124 @@
-<script setup>
-import {ref} from 'vue'
 
-const crop = ref({
-  name: 'Maíz',
-  variety: 'Maíz amarillo duro',
-  plot: 'Parcela Norte',
-  sowingDate: '15/08/2026',
-  growthStage: 'Etapa vegetativa',
-  idealHumidity: '60% - 75%'
-})
+<script setup>
+import {computed, onMounted} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {useI18n} from 'vue-i18n';
+import {storeToRefs} from 'pinia';
+import {useCropsStore} from '../../application/crops.store.js';
+import {usePlotsStore} from '../../../plots/application/plots.store.js';
+
+const route = useRoute();
+const router = useRouter();
+const {t} = useI18n();
+
+const cropsStore = useCropsStore();
+const {selectedCrop, loading, error, notFound} = storeToRefs(cropsStore);
+
+const plotsStore = usePlotsStore();
+const {plots} = storeToRefs(plotsStore);
+
+const plot = computed(() =>
+    plots.value.find(plot => String(plot.id) === String(route.params.id))
+);
+
+const crop = computed(() =>
+    selectedCrop.value &&
+    String(selectedCrop.value.plotId) === String(route.params.id)
+        ? selectedCrop.value
+        : null
+);
+
+const statusLabel = computed(() => {
+  if (!crop.value) return '';
+
+  if (crop.value.status === 'ACTIVE') return t('crops.active');
+  if (crop.value.status === 'IN_PROGRESS') return t('crops.inProgress');
+  if (crop.value.status === 'COMPLETED') return t('crops.completed');
+
+  return crop.value.status;
+});
+
+const back = () => {
+  router.push(`/plots/${route.params.id}/crops`);
+};
+
+onMounted(() => {
+  cropsStore.fetchCrop(route.params.cropId);
+  plotsStore.fetchPlots();
+});
 </script>
 
 <template>
-  <section class="crop-details">
-    <h1>Detalles del cultivo</h1>
+  <section class="plots-page crop-details">
+    <p class="mb-3">
+      <router-link to="/plots">
+        {{ t('navigation.plots') }}
+      </router-link>
+      /
+      <router-link :to="`/plots/${route.params.id}/crops`">
+        {{ t('crops.title') }}
+      </router-link>
+      / {{ t('crops.details') }}
+    </p>
 
-    <div class="crop-details__divider"></div>
-
-    <pv-card class="crop-details__card">
-      <template #title>
-        Información del cultivo
-      </template>
-
-      <template #content>
-        <div class="crop-details__information">
-
-          <div class="crop-details__row">
-            <span>Cultivo</span>
-            <strong>{{ crop.name }}</strong>
-          </div>
-
-          <div class="crop-details__row">
-            <span>Variedad</span>
-            <strong>{{ crop.variety }}</strong>
-          </div>
-
-          <div class="crop-details__row">
-            <span>Parcela</span>
-            <strong>{{ crop.plot }}</strong>
-          </div>
-
-          <div class="crop-details__row">
-            <span>Fecha de siembra</span>
-            <strong>{{ crop.sowingDate }}</strong>
-          </div>
-
-          <div class="crop-details__row">
-            <span>Etapa de crecimiento</span>
-            <strong>{{ crop.growthStage }}</strong>
-          </div>
-
-          <div class="crop-details__row">
-            <span>Humedad ideal</span>
-            <strong>{{ crop.idealHumidity }}</strong>
-          </div>
-
-        </div>
-      </template>
-    </pv-card>
-
-    <div class="crop-details__actions">
-      <pv-button
-          label="Volver"
-          icon="pi pi-arrow-left"
-          severity="secondary"
-      />
+    <div class="page-heading">
+      <h1>{{ t('crops.details') }}</h1>
     </div>
+
+    <p v-if="loading">{{ t('crops.loading') }}</p>
+
+    <p v-else-if="error" class="error-message">
+      {{ t('crops.loadError') }}
+    </p>
+
+    <p v-else-if="notFound || !crop" class="empty-state">
+      {{ t('crops.notFound') }}
+    </p>
+
+    <template v-else>
+      <div class="plot-card crop-details-card">
+        <h2>{{ crop.name }}</h2>
+
+        <dl class="crop-details-information">
+          <dt>{{ t('crops.variety') }}</dt>
+          <dd>{{ crop.variety }}</dd>
+
+          <dt>{{ t('crops.plot') }}</dt>
+          <dd>{{ plot?.name || crop.plotId }}</dd>
+
+          <dt>{{ t('crops.plantingDate') }}</dt>
+          <dd>{{ crop.plantingDate }}</dd>
+
+          <dt>{{ t('crops.expectedHarvest') }}</dt>
+          <dd>{{ crop.expectedHarvest || '-' }}</dd>
+
+          <dt>{{ t('crops.status') }}</dt>
+          <dd>{{ statusLabel }}</dd>
+
+          <dt>{{ t('crops.plantedArea') }}</dt>
+          <dd>{{ crop.plantedAreaHectares ?? '-' }}</dd>
+
+          <dt>{{ t('crops.sowingMethod') }}</dt>
+          <dd>{{ crop.sowingMethod || '-' }}</dd>
+
+          <dt>{{ t('crops.irrigationType') }}</dt>
+          <dd>{{ crop.irrigationType || '-' }}</dd>
+
+          <dt>{{ t('crops.soilType') }}</dt>
+          <dd>{{ crop.soilType || '-' }}</dd>
+
+          <dt>{{ t('crops.notes') }}</dt>
+          <dd>{{ crop.notes || '-' }}</dd>
+        </dl>
+      </div>
+
+      <div class="form-actions">
+        <pv-button
+            :label="t('crops.backToList')"
+            severity="secondary"
+            @click="back"
+        />
+      </div>
+    </template>
   </section>
 </template>
-
-<style scoped>
-.crop-details {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 32px;
-}
-
-.crop-details h1 {
-  color: #17221c;
-}
-
-.crop-details__divider {
-  height: 2px;
-  margin: 24px 0 32px;
-  background: #1976a8;
-}
-
-.crop-details__card {
-  background: #1976a8;
-}
-
-.crop-details__card :deep(.p-card-title) {
-  color: #ffffff;
-}
-
-.crop-details__information {
-  display: grid;
-  gap: 16px;
-}
-
-.crop-details__row {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-  color: #ffffff;
-}
-
-.crop-details__actions {
-  margin-top: 24px;
-}
-
-@media (max-width: 640px) {
-  .crop-details {
-    padding: 16px;
-  }
-
-  .crop-details__row {
-    flex-direction: column;
-    gap: 4px;
-  }
-}
-</style>

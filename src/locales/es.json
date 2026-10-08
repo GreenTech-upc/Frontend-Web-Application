@@ -102,7 +102,9 @@
     "invalidArea": "La superficie sembrada debe ser mayor que cero.",
     "exceedsPlotArea": "La superficie sembrada no puede superar la superficie de la parcela.",
     "invalidHarvestDate": "La cosecha prevista no puede ser anterior a la fecha de siembra.",
-    "registerError": "No se pudo registrar el cultivo. Inténtalo de nuevo."
+    "registerError": "No se pudo registrar el cultivo. Inténtalo de nuevo.",
+    "notFound": "Cultivo no encontrado.",
+    "backToList": "Volver a cultivos"
   },
   "language": "Idioma"
 }

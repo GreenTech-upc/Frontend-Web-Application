@@ -8,9 +8,11 @@ import {Crop} from '../domain/model/crop.entity.js';
 export const useCropsStore = defineStore('crops', () => {
     const api = new CropsApi();
     const crops = shallowRef([]);
+    const selectedCrop = shallowRef(null);
     const loading = ref(false);
     const saving = ref(false);
     const error = ref('');
+    const notFound = ref(false);
 
     async function fetchCrops() {
         loading.value = true;
@@ -20,6 +22,26 @@ export const useCropsStore = defineStore('crops', () => {
             crops.value = CropAssembler.toEntitiesFromResponse(await api.getAll());
         } catch {
             error.value = 'Unable to load crops.';
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    async function fetchCrop(id) {
+        loading.value = true;
+        error.value = '';
+        notFound.value = false;
+        selectedCrop.value = null;
+
+        try {
+            const response = await api.getById(id);
+            selectedCrop.value = CropAssembler.toEntityFromResource(response.data);
+        } catch (err) {
+            if (err.response?.status === 404) {
+                notFound.value = true;
+            } else {
+                error.value = 'Unable to load crop details.';
+            }
         } finally {
             loading.value = false;
         }
@@ -46,5 +68,15 @@ export const useCropsStore = defineStore('crops', () => {
         }
     }
 
-    return {crops, loading, saving, error, fetchCrops, registerCrop};
+    return {
+        crops,
+        selectedCrop,
+        loading,
+        saving,
+        error,
+        notFound,
+        fetchCrops,
+        fetchCrop,
+        registerCrop
+    };
 });

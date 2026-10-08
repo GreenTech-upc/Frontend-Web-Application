@@ -97,9 +97,9 @@ onMounted(() => store.fetchPlots());
 
             <router-link
                 :to="`/plots/${plot.id}/crops`"
-                :aria-label="`View crops for ${plot.name}`"
+                :aria-label="`${t('crops.viewPlotCrops')}: ${plot.name}`"
             >
-              Crops
+              {{ t('crops.title') }}
             </router-link>
           </div>
         </article>
