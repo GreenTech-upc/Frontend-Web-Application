@@ -2,12 +2,14 @@
 <script setup>
 import {computed, onMounted, ref} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
+import {useI18n} from 'vue-i18n';
 import {storeToRefs} from 'pinia';
 import {usePlotsStore} from '../../../plots/application/plots.store.js';
 import {useCropsStore} from '../../application/crops.store.js';
 
 const route = useRoute();
 const router = useRouter();
+const {t} = useI18n();
 
 const plotsStore = usePlotsStore();
 const {plots, loading: plotsLoading, error: plotsError} = storeToRefs(plotsStore);
@@ -49,7 +51,7 @@ const registerCrop = async () => {
   validationMessage.value = '';
 
   if (!plot.value || !name.value.trim() || !variety.value.trim() || !plantingDate.value) {
-    validationMessage.value = 'Complete all required fields.';
+    validationMessage.value = 'crops.requiredFields';
     return;
   }
 
@@ -59,17 +61,17 @@ const registerCrop = async () => {
       : Number(plantedAreaHectares.value);
 
   if (area !== null && (!Number.isFinite(area) || area <= 0)) {
-    validationMessage.value = 'The planted area must be greater than zero.';
+    validationMessage.value = 'crops.invalidArea';
     return;
   }
 
   if (area !== null && area > plot.value.areaHectares) {
-    validationMessage.value = 'The planted area cannot exceed the plot area.';
+    validationMessage.value = 'crops.exceedsPlotArea';
     return;
   }
 
   if (expectedHarvest.value && expectedHarvest.value < plantingDate.value) {
-    validationMessage.value = 'Expected harvest cannot be before the planting date.';
+    validationMessage.value = 'crops.invalidHarvestDate';
     return;
   }
 
@@ -98,42 +100,48 @@ onMounted(() => plotsStore.fetchPlots());
 <template>
   <section class="plots-page crop-registration">
     <p class="mb-3">
-      <router-link to="/plots">My Plots</router-link>
+      <router-link to="/plots">
+        {{ t('navigation.plots') }}
+      </router-link>
       /
       <router-link :to="`/plots/${route.params.id}/crops`">
-        Crops
+        {{ t('crops.title') }}
       </router-link>
-      / Register Crop
+      / {{ t('crops.register') }}
     </p>
 
     <div class="page-heading">
-      <h1>Register Crop</h1>
-      <p>Enter the information for the new crop.</p>
+      <h1>{{ t('crops.register') }}</h1>
+      <p>{{ t('crops.registrationDescription') }}</p>
     </div>
 
-    <p v-if="plotsLoading">Loading plot information...</p>
+    <p v-if="plotsLoading">{{ t('crops.loadingPlot') }}</p>
+
     <p v-else-if="plotsError" class="error-message">
-      Unable to load plot information.
+      {{ t('plots.loadError') }}
     </p>
+
     <p v-else-if="!plot" class="empty-state">
-      Plot not found.
+      {{ t('crops.plotNotFound') }}
     </p>
 
     <template v-else>
       <p v-if="validationMessage" class="error-message">
-        {{ validationMessage }}
+        {{ t(validationMessage) }}
       </p>
 
       <p v-if="error" class="error-message">
-        {{ error }}
+        {{ t('crops.registerError') }}
       </p>
 
       <div class="crop-registration-grid">
         <fieldset class="crop-registration-section">
-          <legend>Basic Information</legend>
+          <legend>{{ t('crops.basicInformation') }}</legend>
 
           <div class="crop-registration-field">
-            <label for="crop-plot">Plot *</label>
+            <label for="crop-plot">
+              {{ t('crops.plot') }} *
+            </label>
             <pv-input-text
                 id="crop-plot"
                 :model-value="plot.name"
@@ -142,26 +150,30 @@ onMounted(() => plotsStore.fetchPlots());
           </div>
 
           <div class="crop-registration-field">
-            <label for="crop-name">Crop type *</label>
+            <label for="crop-name">
+              {{ t('crops.cropType') }} *
+            </label>
             <pv-input-text
                 id="crop-name"
                 v-model="name"
-                placeholder="Enter crop type"
+                :placeholder="t('crops.cropTypePlaceholder')"
             />
           </div>
 
           <div class="crop-registration-field">
-            <label for="crop-variety">Variety *</label>
+            <label for="crop-variety">
+              {{ t('crops.variety') }} *
+            </label>
             <pv-input-text
                 id="crop-variety"
                 v-model="variety"
-                placeholder="Enter variety"
+                :placeholder="t('crops.varietyPlaceholder')"
             />
           </div>
 
           <div class="crop-registration-field">
             <label for="crop-planting-date">
-              Planting date *
+              {{ t('crops.plantingDate') }} *
             </label>
             <pv-date-picker
                 input-id="crop-planting-date"
@@ -173,7 +185,7 @@ onMounted(() => plotsStore.fetchPlots());
 
           <div class="crop-registration-field">
             <label for="crop-harvest">
-              Expected harvest
+              {{ t('crops.expectedHarvest') }}
             </label>
             <pv-date-picker
                 input-id="crop-harvest"
@@ -185,7 +197,7 @@ onMounted(() => plotsStore.fetchPlots());
 
           <div class="crop-registration-field">
             <label for="crop-area">
-              Planted area (ha)
+              {{ t('crops.plantedArea') }}
             </label>
             <pv-input-text
                 id="crop-area"
@@ -193,68 +205,68 @@ onMounted(() => plotsStore.fetchPlots());
                 type="number"
                 min="0"
                 step="0.01"
-                placeholder="Enter planted area"
+                :placeholder="t('crops.plantedAreaPlaceholder')"
             />
           </div>
         </fieldset>
 
         <fieldset class="crop-registration-section">
-          <legend>Additional Information</legend>
+          <legend>{{ t('crops.additionalInformation') }}</legend>
 
           <div class="crop-registration-field">
             <label for="crop-sowing-method">
-              Sowing method
+              {{ t('crops.sowingMethod') }}
             </label>
             <pv-input-text
                 id="crop-sowing-method"
                 v-model="sowingMethod"
-                placeholder="Enter sowing method"
+                :placeholder="t('crops.sowingMethodPlaceholder')"
             />
           </div>
 
           <div class="crop-registration-field">
             <label for="crop-irrigation">
-              Irrigation type
+              {{ t('crops.irrigationType') }}
             </label>
             <pv-input-text
                 id="crop-irrigation"
                 v-model="irrigationType"
-                placeholder="Enter irrigation type"
+                :placeholder="t('crops.irrigationPlaceholder')"
             />
           </div>
 
           <div class="crop-registration-field">
             <label for="crop-soil">
-              Soil type
+              {{ t('crops.soilType') }}
             </label>
             <pv-input-text
                 id="crop-soil"
                 v-model="soilType"
-                placeholder="Enter soil type"
+                :placeholder="t('crops.soilPlaceholder')"
             />
           </div>
 
           <div class="crop-registration-field">
             <label for="crop-image">
-              Reference image URL
+              {{ t('crops.imageUrl') }}
             </label>
             <pv-input-text
                 id="crop-image"
                 v-model="imageUrl"
                 type="url"
-                placeholder="https://example.com/image.jpg"
+                :placeholder="t('crops.imagePlaceholder')"
             />
           </div>
 
           <div class="crop-registration-field">
             <label for="crop-notes">
-              Notes
+              {{ t('crops.notes') }}
             </label>
             <pv-textarea
                 id="crop-notes"
                 v-model="notes"
                 rows="5"
-                placeholder="Enter additional notes"
+                :placeholder="t('crops.notesPlaceholder')"
             />
           </div>
         </fieldset>
@@ -262,14 +274,14 @@ onMounted(() => plotsStore.fetchPlots());
 
       <div class="crop-registration-actions">
         <pv-button
-            label="Cancel"
+            :label="t('crops.cancel')"
             severity="secondary"
             :disabled="saving"
             @click="cancel"
         />
 
         <pv-button
-            label="Register"
+            :label="t('crops.register')"
             :loading="saving"
             :disabled="saving"
             @click="registerCrop"
