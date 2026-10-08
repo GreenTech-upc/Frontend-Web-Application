@@ -52,5 +52,9 @@
     "menuTitle": "Menu",
     "sectionPending": "This section is pending development. You can register and view plots in My Plots."
   },
+  "crops": {
+    "title": "Crops",
+    "viewPlotCrops": "View crops for {name}"
+  },
   "language": "Language"
 }

@@ -52,5 +52,9 @@
     "menuTitle": "Menú",
     "sectionPending": "Esta sección está pendiente de desarrollo. Puedes registrar y consultar parcelas en Mis parcelas."
   },
+  "crops": {
+    "title": "Cultivos",
+    "viewPlotCrops": "Ver cultivos de {name}"
+  },
   "language": "Idioma"
 }
