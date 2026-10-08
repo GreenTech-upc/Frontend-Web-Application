@@ -1,186 +1,150 @@
+
 <script setup>
-import {ref} from 'vue'
+import {computed, onMounted, ref} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {storeToRefs} from 'pinia';
+import {usePlotsStore} from '../../../plots/application/plots.store.js';
+import {useCropsStore} from '../../application/crops.store.js';
 
-const cropTypes = ref([
-  {name: 'Maíz'},
-  {name: 'Soya'},
-  {name: 'Uva'},
-  {name: 'Trigo'}
-])
+const route = useRoute();
+const router = useRouter();
 
-const cropVarieties = ref([
-  {name: 'Maíz amarillo duro'},
-  {name: 'Maíz híbrido'},
-  {name: 'Maíz morado'}
-])
+const plotsStore = usePlotsStore();
+const {plots} = storeToRefs(plotsStore);
 
-const selectedCrop = ref(null)
-const selectedVariety = ref(null)
-const sowingDate = ref(null)
+const cropsStore = useCropsStore();
+const {saving, error} = storeToRefs(cropsStore);
 
-const showSuccessMessage = ref(false)
-const showValidationMessage = ref(false)
+const name = ref('');
+const variety = ref('');
+const plantingDate = ref(null);
+const expectedHarvest = ref(null);
+const showValidation = ref(false);
 
-const registerCrop = () => {
-  showSuccessMessage.value = false
-  showValidationMessage.value = false
+const plot = computed(() =>
+    plots.value.find(plot => String(plot.id) === String(route.params.id))
+);
 
-  if (!selectedCrop.value || !selectedVariety.value || !sowingDate.value) {
-    showValidationMessage.value = true
-    return
+const formatDate = date => {
+  if (!date) return null;
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
+const cancel = () => {
+  router.push(`/plots/${route.params.id}/crops`);
+};
+
+const registerCrop = async () => {
+  showValidation.value = false;
+
+  if (!plot.value || !name.value.trim() || !variety.value.trim() || !plantingDate.value) {
+    showValidation.value = true;
+    return;
   }
 
-  showSuccessMessage.value = true
-}
+  const savedCrop = await cropsStore.registerCrop({
+    plotId: plot.value.id,
+    name: name.value,
+    variety: variety.value,
+    plantingDate: formatDate(plantingDate.value),
+    expectedHarvest: formatDate(expectedHarvest.value)
+  });
+
+  if (savedCrop) {
+    router.push(`/plots/${plot.value.id}/crops`);
+  }
+};
+
+onMounted(() => plotsStore.fetchPlots());
 </script>
 
 <template>
-  <section class="crop-form">
-    <h1>Registro de cultivo</h1>
-
-    <div class="crop-form__divider"></div>
-
-    <p
-        v-if="showSuccessMessage"
-        class="crop-form__success"
-    >
-      Cultivo enlazado exitosamente.
+  <section class="plots-page crop-registration">
+    <p>
+      <router-link to="/plots">My plots</router-link>
+      / <router-link :to="`/plots/${route.params.id}/crops`">Crops</router-link>
+      / Register Crop
     </p>
 
-    <p
-        v-if="showValidationMessage"
-        class="crop-form__validation"
-    >
-      Completa todos los campos.
-    </p>
+    <h1>Register Crop</h1>
 
-    <pv-card class="crop-form__card">
-      <template #title>
-        Información del cultivo
-      </template>
+    <p v-if="!plot">Loading plot information...</p>
 
-      <template #content>
-        <div class="crop-form__fields">
-          <div class="crop-form__field">
-            <label>Tipo de cultivo</label>
+    <template v-else>
+      <p v-if="showValidation" class="error-message">
+        Complete all required fields.
+      </p>
 
-            <pv-select
-                v-model="selectedCrop"
-                :options="cropTypes"
-                option-label="name"
-                placeholder="Selecciona un cultivo"
-                class="w-full"
+      <p v-if="error" class="error-message">{{ error }}</p>
+
+      <div class="crop-registration-fields">
+        <fieldset class="plot-card">
+          <legend>Basic Information</legend>
+
+          <div class="form-field">
+            <label for="crop-plot">Plot *</label>
+            <pv-input-text id="crop-plot" :model-value="plot.name" disabled />
+          </div>
+
+          <div class="form-field">
+            <label for="crop-name">Crop type *</label>
+            <pv-input-text
+                id="crop-name"
+                v-model="name"
+                placeholder="Enter crop type"
             />
           </div>
 
-          <div class="crop-form__field">
-            <label>Variedad</label>
-
-            <pv-select
-                v-model="selectedVariety"
-                :options="cropVarieties"
-                option-label="name"
-                placeholder="Selecciona una variedad"
-                class="w-full"
+          <div class="form-field">
+            <label for="crop-variety">Variety *</label>
+            <pv-input-text
+                id="crop-variety"
+                v-model="variety"
+                placeholder="Enter variety"
             />
           </div>
 
-          <div class="crop-form__field">
-            <label>Fecha de siembra</label>
-
+          <div class="form-field">
+            <label for="crop-planting-date">Planting date *</label>
             <pv-date-picker
-                v-model="sowingDate"
+                input-id="crop-planting-date"
+                v-model="plantingDate"
                 date-format="dd/mm/yy"
-                placeholder="Selecciona una fecha"
                 show-icon
-                class="w-full"
             />
           </div>
-        </div>
-      </template>
-    </pv-card>
 
-    <div class="crop-form__actions">
-      <pv-button
-          label="Cancelar"
-          severity="secondary"
-      />
+          <div class="form-field">
+            <label for="crop-harvest">Expected harvest</label>
+            <pv-date-picker
+                input-id="crop-harvest"
+                v-model="expectedHarvest"
+                date-format="dd/mm/yy"
+                show-icon
+            />
+          </div>
+        </fieldset>
+      </div>
 
-      <pv-button
-          label="Registrar"
-          @click="registerCrop"
-      />
-    </div>
+      <div class="form-actions">
+        <pv-button
+            label="Cancel"
+            severity="secondary"
+            @click="cancel"
+        />
+
+        <pv-button
+            label="Register"
+            :loading="saving"
+            :disabled="saving"
+            @click="registerCrop"
+        />
+      </div>
+    </template>
   </section>
 </template>
-
-<style scoped>
-.crop-form {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 32px;
-}
-
-.crop-form h1 {
-  color: #17221c;
-}
-
-.crop-form__divider {
-  height: 2px;
-  margin: 24px 0 32px;
-  background: #1976a8;
-}
-
-.crop-form__success {
-  margin-bottom: 20px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  background: #66bb6a;
-  color: #ffffff;
-}
-
-.crop-form__validation {
-  margin-bottom: 20px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  background: #f5a623;
-  color: #ffffff;
-}
-
-.crop-form__card {
-  background: #1976a8;
-}
-
-.crop-form__card :deep(.p-card-title),
-.crop-form__field label {
-  color: #ffffff;
-}
-
-.crop-form__fields {
-  display: grid;
-  gap: 20px;
-}
-
-.crop-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.crop-form__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-@media (max-width: 640px) {
-  .crop-form {
-    padding: 16px;
-  }
-
-  .crop-form__actions {
-    flex-direction: column-reverse;
-  }
-}
-</style>

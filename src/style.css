@@ -144,4 +144,23 @@ a:focus-visible, button:focus-visible { outline: 3px solid #1976a8; outline-offs
     flex-direction: column;
     align-items: stretch;
   }
+  .crop-registration h1 {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--plot-blue);
+  }
+
+  .crop-registration-fields {
+    max-width: 760px;
+    margin-top: 24px;
+  }
+
+  .crop-registration .plot-card {
+    width: 100%;
+  }
+
+  .crop-registration .p-inputtext,
+  .crop-registration .p-datepicker {
+    width: 100%;
+  }
+
 }
