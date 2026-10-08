@@ -1,25 +1,54 @@
 
 <script setup>
-import {computed, onMounted} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import {useRoute} from 'vue-router';
 import {useI18n} from 'vue-i18n';
 import {storeToRefs} from 'pinia';
 import {usePlotsStore} from '../../../plots/application/plots.store.js';
+import {useCropsStore} from '../../application/crops.store.js';
 
 const route = useRoute();
 const {t, n} = useI18n();
-const store = usePlotsStore();
-const {plots, loading, error} = storeToRefs(store);
+
+const plotsStore = usePlotsStore();
+const {plots, loading: plotsLoading, error: plotsError} = storeToRefs(plotsStore);
+
+const cropsStore = useCropsStore();
+const {crops, loading: cropsLoading, error: cropsError} = storeToRefs(cropsStore);
+
+const search = ref('');
+const status = ref('');
 
 const plot = computed(() =>
     plots.value.find(plot => String(plot.id) === String(route.params.id))
 );
 
-onMounted(() => store.fetchPlots());
+const plotCrops = computed(() =>
+    crops.value.filter(crop => String(crop.plotId) === String(route.params.id))
+);
+
+const filteredCrops = computed(() =>
+    plotCrops.value.filter(crop =>
+        `${crop.name} ${crop.variety}`.toLowerCase().includes(search.value.trim().toLowerCase())
+        && (!status.value || crop.status === status.value)
+    )
+);
+
+const statusOptions = [
+  {label: 'All statuses', value: ''},
+  {label: 'Active', value: 'ACTIVE'},
+  {label: 'In progress', value: 'IN_PROGRESS'},
+  {label: 'Completed', value: 'COMPLETED'}
+];
+
+onMounted(() => {
+  plotsStore.fetchPlots();
+  cropsStore.fetchCrops();
+});
 </script>
 
 <template>
-  <section class="plots-page" :aria-busy="loading">
+  <section class="plots-page" :aria-busy="plotsLoading || cropsLoading">
     <p class="mb-3">
       <router-link to="/plots">{{ t('navigation.plots') }}</router-link>
       / {{ plot?.name || route.params.id }} / Crops
@@ -30,8 +59,8 @@ onMounted(() => store.fetchPlots());
       <p>Crops associated with this plot.</p>
     </div>
 
-    <p v-if="loading">Loading plot...</p>
-    <p v-else-if="error" class="error-message">{{ t(error) }}</p>
+    <p v-if="plotsLoading">Loading plot...</p>
+    <p v-else-if="plotsError" class="error-message">{{ t(plotsError) }}</p>
     <p v-else-if="!plot">Plot not found.</p>
 
     <template v-else>
@@ -57,21 +86,57 @@ onMounted(() => store.fetchPlots());
       <div class="crop-list-filters">
         <div class="filter-field">
           <label for="crop-search">Search</label>
-          <pv-input-text id="crop-search" placeholder="Search crops" disabled />
+          <pv-input-text
+              id="crop-search"
+              v-model="search"
+              placeholder="Search crops"
+          />
         </div>
 
         <div class="filter-field">
           <label for="crop-filter">Filter by</label>
           <pv-select
               input-id="crop-filter"
-              placeholder="All statuses"
-              disabled
+              v-model="status"
+              :options="statusOptions"
+              option-label="label"
+              option-value="value"
           />
         </div>
       </div>
 
-      <p>Total: 0</p>
-      <p>No crops registered yet.</p>
+      <p v-if="cropsLoading">Loading crops...</p>
+      <p v-else-if="cropsError" class="error-message">{{ cropsError }}</p>
+
+      <template v-else>
+        <p>Total: {{ filteredCrops.length }}</p>
+
+        <p v-if="!plotCrops.length" class="empty-state">
+          No crops registered yet.
+        </p>
+
+        <p v-else-if="!filteredCrops.length" class="empty-state">
+          No matching crops found.
+        </p>
+
+        <div v-else class="plot-grid">
+          <article
+              v-for="crop in filteredCrops"
+              :key="crop.id"
+              class="plot-card registered-plot"
+          >
+            <h2>{{ crop.name }}</h2>
+            <p>Variety: {{ crop.variety }}</p>
+            <p>Planting date: {{ crop.plantingDate }}</p>
+            <p>Expected harvest: {{ crop.expectedHarvest || '-' }}</p>
+            <p>Status: {{ crop.status }}</p>
+
+            <router-link :to="`/plots/${plot.id}/crops/${crop.id}`">
+              Details
+            </router-link>
+          </article>
+        </div>
+      </template>
     </template>
   </section>
 </template>
