@@ -104,7 +104,11 @@
     "invalidHarvestDate": "Expected harvest cannot be before the planting date.",
     "registerError": "Unable to register crop. Please try again.",
     "notFound": "Crop not found.",
-    "backToList": "Back to crops"
+    "backToList": "Back to crops",
+    "technicalInformation": "Technical Information",
+    "growthStage": "Growth stage",
+    "idealHumidity": "Ideal humidity",
+    "notSpecified": "Not specified"
   },
   "language": "Language"
 }

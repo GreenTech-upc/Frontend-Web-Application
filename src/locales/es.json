@@ -104,7 +104,11 @@
     "invalidHarvestDate": "La cosecha prevista no puede ser anterior a la fecha de siembra.",
     "registerError": "No se pudo registrar el cultivo. Inténtalo de nuevo.",
     "notFound": "Cultivo no encontrado.",
-    "backToList": "Volver a cultivos"
+    "backToList": "Volver a cultivos",
+    "technicalInformation": "Información técnica",
+    "growthStage": "Etapa de crecimiento",
+    "idealHumidity": "Humedad ideal",
+    "notSpecified": "No especificado"
   },
   "language": "Idioma"
 }

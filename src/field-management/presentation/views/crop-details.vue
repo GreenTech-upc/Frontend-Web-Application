@@ -9,7 +9,7 @@ import {usePlotsStore} from '../../../plots/application/plots.store.js';
 
 const route = useRoute();
 const router = useRouter();
-const {t} = useI18n();
+const {t, n} = useI18n();
 
 const cropsStore = useCropsStore();
 const {selectedCrop, loading, error, notFound} = storeToRefs(cropsStore);
@@ -36,6 +36,27 @@ const statusLabel = computed(() => {
   if (crop.value.status === 'COMPLETED') return t('crops.completed');
 
   return crop.value.status;
+});
+
+const idealHumidity = computed(() => {
+  if (!crop.value) return t('crops.notSpecified');
+
+  const min = crop.value.idealHumidityMin;
+  const max = crop.value.idealHumidityMax;
+
+  if (min === null && max === null) {
+    return t('crops.notSpecified');
+  }
+
+  if (min !== null && max !== null) {
+    return `${n(min)}% - ${n(max)}%`;
+  }
+
+  if (min !== null) {
+    return `${n(min)}%`;
+  }
+
+  return `${n(max)}%`;
 });
 
 const back = () => {
@@ -65,9 +86,11 @@ onMounted(() => {
       <h1>{{ t('crops.details') }}</h1>
     </div>
 
-    <p v-if="loading">{{ t('crops.loading') }}</p>
+    <p v-if="loading" role="status">
+      {{ t('crops.loading') }}
+    </p>
 
-    <p v-else-if="error" class="error-message">
+    <p v-else-if="error" role="alert" class="error-message">
       {{ t('crops.loadError') }}
     </p>
 
@@ -96,7 +119,9 @@ onMounted(() => {
           <dd>{{ statusLabel }}</dd>
 
           <dt>{{ t('crops.plantedArea') }}</dt>
-          <dd>{{ crop.plantedAreaHectares ?? '-' }}</dd>
+          <dd>{{ crop.plantedAreaHectares === null
+              ? '-'
+              : n(crop.plantedAreaHectares) }}</dd>
 
           <dt>{{ t('crops.sowingMethod') }}</dt>
           <dd>{{ crop.sowingMethod || '-' }}</dd>
@@ -112,10 +137,23 @@ onMounted(() => {
         </dl>
       </div>
 
+      <div class="plot-card crop-details-card">
+        <h2>{{ t('crops.technicalInformation') }}</h2>
+
+        <dl class="crop-details-information">
+          <dt>{{ t('crops.growthStage') }}</dt>
+          <dd>{{ crop.growthStage || t('crops.notSpecified') }}</dd>
+
+          <dt>{{ t('crops.idealHumidity') }}</dt>
+          <dd>{{ idealHumidity }}</dd>
+        </dl>
+      </div>
+
       <div class="form-actions">
         <pv-button
             :label="t('crops.backToList')"
             severity="secondary"
+            icon="pi pi-arrow-left"
             @click="back"
         />
       </div>
